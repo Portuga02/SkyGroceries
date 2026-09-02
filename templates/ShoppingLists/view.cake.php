@@ -1,10 +1,10 @@
 <?php
-$this->assign('title', h($list->name) . ' — skyGroceries');
+$this->assign('title', h($list->name) . ' — SkyGroceries');
 ?>
 
 <div class="page-header">
     <div class="page-header-row">
-        <h2> <?= h($list->name) ?></h2>
+        <h2><?= h($list->name) ?></h2>
         <div class="page-header-actions">
             <?= $this->Html->link('Editar Lista', ['action' => 'edit', $list->id], ['class' => 'btn btn-secondary']) ?>
             <?= $this->Form->postLink(
@@ -14,7 +14,7 @@ $this->assign('title', h($list->name) . ' — skyGroceries');
             ) ?>
         </div>
     </div>
-    <p><?= $purchasedCount ?> de <?= $totalCount ?> itens comprados</p>
+    <p><span id="purchased-count"><?= $purchasedCount ?></span> de <span id="total-count"><?= $totalCount ?></span> itens comprados</p>
 
     <?php if ($totalCount > 0) : ?>
         <div class="progress-bar progress-bar-large">
@@ -44,10 +44,14 @@ $this->assign('title', h($list->name) . ' — skyGroceries');
                         <?= $this->Form->postLink(
                             $item->purchased ? '✅' : '⬜',
                             ['controller' => 'Items', 'action' => 'toggle', $item->id],
-                            ['escape' => false, 'class' => 'toggle-btn', 'title' => $item->purchased ? 'Desmarcar' : 'Marcar como comprado']
+                            [
+                                'class' => 'toggle-btn ajax-toggle',
+                                'data-item-id' => $item->id,
+                                'escape' => false
+                            ]
                         ) ?>
                     </td>
-                    <td class="<?= $item->purchased ? 'text-risked' : '' ?>">
+                    <td class="item-name-cell <?= $item->purchased ? 'text-risked' : '' ?>">
                         <?= h($item->name) ?>
                     </td>
                     <td>
@@ -99,3 +103,77 @@ $this->assign('title', h($list->name) . ' — skyGroceries');
 <div class="back-link">
     <?= $this->Html->link('← Voltar para listas', ['action' => 'index']) ?>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.ajax-toggle').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            // O postLink do CakePHP submete um form oculto com o token CSRF
+            let form = null;
+            const formName = btn.getAttribute('data-confirm-form');
+            if (formName) {
+                form = document.querySelector(`form[name="${formName}"]`);
+            }
+            if (!form) {
+                // Tenta achar o formulário oculto gerado adjacente
+                form = btn.closest('form') || btn.nextElementSibling;
+                while (form && form.tagName !== 'FORM') {
+                    form = form.nextElementSibling;
+                }
+            }
+
+            const url = form ? form.action : btn.getAttribute('href');
+            let token = '';
+            if (form) {
+                const tokenInput = form.querySelector('input[name="_csrfToken"]');
+                if (tokenInput) token = tokenInput.value;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': token
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // 1. Alterna o emoji do botão
+                    btn.textContent = data.purchased ? '✅' : '⬜';
+
+                    // 2. Alterna o estilo da linha e o risco no texto
+                    const row = btn.closest('tr');
+                    if (row) {
+                        row.classList.toggle('item-purchased', data.purchased);
+                        const nameCell = row.querySelector('.item-name-cell');
+                        if (nameCell) {
+                            nameCell.classList.toggle('text-risked', data.purchased);
+                        }
+                    }
+
+                    // 3. Atualiza o contador de texto
+                    const purchasedEl = document.getElementById('purchased-count');
+                    const totalEl = document.getElementById('total-count');
+                    if (purchasedEl) purchasedEl.textContent = data.bought;
+                    if (totalEl) totalEl.textContent = data.total;
+
+                    // 4. Atualiza a barra de progresso
+                    const fill = document.querySelector('.progress-fill');
+                    if (fill) {
+                        fill.style.width = `${data.percent}%`;
+                        fill.textContent = data.percent > 0 ? `${data.percent}%` : '';
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao alternar o item:', err);
+            }
+        });
+    });
+});
+</script>
