@@ -218,11 +218,12 @@ input[type="submit"]:active,
     box-sizing: border-box;
 }
 
-/* List Grid */
+/* List Grid & Cards */
 .list-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
+    margin-top: 16px;
 }
 
 .list-card {
@@ -231,11 +232,13 @@ input[type="submit"]:active,
     border-radius: var(--radius);
     padding: 20px;
     text-decoration: none;
-    color: inherit;
-    transition: all 0.2s ease;
+    color: var(--color-text);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    justify-content: space-between;
+    min-height: 110px;
+    box-shadow: var(--shadow);
 }
 
 .list-card:hover {
@@ -244,20 +247,40 @@ input[type="submit"]:active,
     border-color: var(--color-primary);
 }
 
-.list-card-header h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
+.list-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.list-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.list-card-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.list-card-header .chevron {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.list-card:hover .chevron {
+    color: var(--color-primary);
+    transform: translateX(3px);
 }
 
 .list-card-footer {
-    margin-top: auto;
+    margin-top: 14px;
+}
+
+.list-card-footer .badge {
+    font-size: 0.8rem;
     color: var(--color-text-muted);
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 6px;
 }
 
 .badge {
