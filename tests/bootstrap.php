@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 ini_set('memory_limit', '512M');
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)

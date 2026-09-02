@@ -1,77 +1,100 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Http\Response;
+
 class ShoppingListsController extends AppController
 {
+    /**
+     * Index method
+     *
+     * @return \Cake\Http\Response|null|void Renders view
+     */
     public function index()
     {
-        $lists = $this->ShoppingLists->find()
-            ->contain('Items')
-            ->orderBy(['ShoppingLists.created' => 'DESC'])
-            ->all();
+        $shoppingLists = $this->paginate($this->ShoppingLists);
 
-        $this->set(compact('lists'));
+        $this->set(compact('shoppingLists'));
     }
-public function view($id = null)
-{
-    $list = $this->ShoppingLists->get($id, contain: ['Items']);
 
-    $items = $list->items ?? [];
-    $totalCount = count($items);
-    $purchasedCount = collection($items)->filter(fn($item) => (bool)$item->purchased)->count();
+    /**
+     * View method
+     *
+     * @param string|null $id Shopping List id.
+     * @return \Cake\Http\Response|null|void Renders view
+     */
+    public function view(?string $id = null)
+    {
+        $list = $this->ShoppingLists->get($id, contain: ['Items']);
 
-    $groupedItems = collection($items)->groupBy(function ($item) {
-        return !empty($item->category) ? $item->category : '📦 Outros';
-    })->toArray();
+        $items = $list->items ?? [];
+        $totalCount = count($items);
+        $purchasedCount = collection($items)->filter(fn($item) => (bool)$item->purchased)->count();
 
-    // groupedItems OBRIGATÓRIO estar aqui dentro:
-    $this->set(compact('list', 'totalCount', 'purchasedCount', 'groupedItems'));
-}
+        $groupedItems = collection($items)->groupBy(function ($item) {
+            return !empty($item->category) ? $item->category : '📦 Outros';
+        })->toArray();
 
+        $this->set(compact('list', 'totalCount', 'purchasedCount', 'groupedItems'));
+    }
+
+    /**
+     * Add method
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     */
     public function add()
     {
-        $list = $this->ShoppingLists->newEmptyEntity();
-
+        $shoppingList = $this->ShoppingLists->newEmptyEntity();
         if ($this->request->is('post')) {
-            $list = $this->ShoppingLists->patchEntity($list, $this->request->getData());
-            if ($this->ShoppingLists->save($list)) {
-                $this->Flash->success('Lista criada com sucesso!');
-                return $this->redirect(['action' => 'view', $list->id]);
-            }
-            $this->Flash->error('Não foi possível criar a lista.');
-        }
+            $shoppingList = $this->ShoppingLists->patchEntity($shoppingList, $this->request->getData());
+            if ($this->ShoppingLists->save($shoppingList)) {
+                $this->Flash->success('Lista criada com sucesso.');
 
-        $this->set(compact('list'));
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error('Não foi possível salvar a lista.');
+        }
+        $this->set(compact('shoppingList'));
     }
 
-    public function edit($id = null)
+    /**
+     * Edit method
+     *
+     * @param string|null $id Shopping List id.
+     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
+     */
+    public function edit(?string $id = null)
     {
-        $list = $this->ShoppingLists->get($id);
-
+        $shoppingList = $this->ShoppingLists->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $list = $this->ShoppingLists->patchEntity($list, $this->request->getData());
-            if ($this->ShoppingLists->save($list)) {
-                $this->Flash->success('Lista atualizada!');
-                return $this->redirect(['action' => 'view', $list->id]);
-            }
-            $this->Flash->error('Erro ao atualizar.');
-        }
+            $shoppingList = $this->ShoppingLists->patchEntity($shoppingList, $this->request->getData());
+            if ($this->ShoppingLists->save($shoppingList)) {
+                $this->Flash->success('Lista atualizada.');
 
-        $this->set(compact('list'));
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error('Não foi possível atualizar a lista.');
+        }
+        $this->set(compact('shoppingList'));
     }
 
-    public function delete($id = null)
+    /**
+     * Delete method
+     *
+     * @param string|null $id Shopping List id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     */
+    public function delete(?string $id = null): ?Response
     {
         $this->request->allowMethod(['post', 'delete']);
-        $list = $this->ShoppingLists->get($id);
-
-        if ($this->ShoppingLists->delete($list)) {
-            $this->Flash->success('Lista excluída.');
+        $shoppingList = $this->ShoppingLists->get($id);
+        if ($this->ShoppingLists->delete($shoppingList)) {
+            $this->Flash->success('Lista removida.');
         } else {
-            $this->Flash->error('Erro ao excluir.');
+            $this->Flash->error('Não foi possível remover a lista.');
         }
 
         return $this->redirect(['action' => 'index']);

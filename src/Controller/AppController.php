@@ -1,10 +1,10 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Event\EventInterface;
 
 class AppController extends Controller
 {
@@ -18,9 +18,13 @@ class AppController extends Controller
         parent::initialize();
         $this->loadComponent('Flash');
     }
-    public function beforeRender(\Cake\Event\EventInterface $event): void
+
+    /**
+     * @param \Cake\Event\EventInterface $event An EventInterface instance
+     * @return \Cake\Http\Response|null|void
+     */
+    public function beforeRender(EventInterface $event)
     {
         parent::beforeRender($event);
-
     }
 }

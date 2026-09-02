@@ -3,10 +3,17 @@ declare(strict_types=1);
 
 namespace App\View;
 
+use Cake\View\Exception\MissingLayoutException;
+use Cake\View\Exception\MissingTemplateException;
 use Cake\View\View;
 
 class AppView extends View
 {
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize(): void
     {
         parent::initialize();
@@ -20,10 +27,11 @@ class AppView extends View
         $this->_ext = '.cake.php';
         try {
             return parent::_getTemplateFileName($name);
-        } catch (\Cake\View\Exception\MissingTemplateException $e) {
+        } catch (MissingTemplateException $e) {
             $this->_ext = '.php';
             $file = parent::_getTemplateFileName($name);
             $this->_ext = '.cake.php';
+
             return $file;
         }
     }
@@ -36,10 +44,11 @@ class AppView extends View
         $this->_ext = '.cake.php';
         try {
             return parent::_getLayoutFileName($name);
-        } catch (\Cake\View\Exception\MissingLayoutException $e) {
+        } catch (MissingLayoutException $e) {
             $this->_ext = '.php';
             $file = parent::_getLayoutFileName($name);
             $this->_ext = '.cake.php';
+
             return $file;
         }
     }

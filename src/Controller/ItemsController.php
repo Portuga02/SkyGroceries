@@ -1,8 +1,9 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Controller;
+
+use Cake\Http\Response;
 
 class ItemsController extends AppController
 {
@@ -23,6 +24,7 @@ class ItemsController extends AppController
 
             if ($this->Items->save($item)) {
                 $this->Flash->success('Item adicionado!');
+
                 return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $listId]);
             }
             $this->Flash->error('Erro ao adicionar item.');
@@ -30,7 +32,14 @@ class ItemsController extends AppController
 
         $this->set(compact('item', 'list'));
     }
-   public function edit(?string $id = null)
+
+    /**
+     * Edit method
+     *
+     * @param string|null $id Item id.
+     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
+     */
+    public function edit(?string $id = null)
     {
         $item = $this->Items->get($id, contain: ['ShoppingLists']);
 
@@ -39,8 +48,7 @@ class ItemsController extends AppController
             if ($this->Items->save($item)) {
                 $this->Flash->success('Item atualizado!');
 
-                // Redireciona diretamente para a rota amigável
-                return $this->redirect('/listas/' . $item->shopping_list_id);
+                return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $item->shopping_list_id]);
             }
             $this->Flash->error('Erro ao atualizar.');
         }
@@ -48,7 +56,13 @@ class ItemsController extends AppController
         $this->set(compact('item'));
     }
 
-    public function delete(?string $id = null)
+    /**
+     * Delete method
+     *
+     * @param string|null $id Item id.
+     * @return \Cake\Http\Response|null Redirects to view.
+     */
+    public function delete(?string $id = null): ?Response
     {
         $this->request->allowMethod(['post', 'delete']);
         $item = $this->Items->get($id);
@@ -63,7 +77,13 @@ class ItemsController extends AppController
         return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $listId]);
     }
 
-   public function toggle(?string $id = null)
+    /**
+     * Toggle method
+     *
+     * @param string|null $id Item id.
+     * @return \Cake\Http\Response|null Redirects to view or returns JSON response.
+     */
+    public function toggle(?string $id = null): ?Response
     {
         $this->request->allowMethod(['post']);
         $item = $this->Items->get($id);
@@ -71,22 +91,21 @@ class ItemsController extends AppController
         $saved = $this->Items->save($item);
 
         if ($this->request->is('ajax') || $this->request->accepts('application/json')) {
-            // Recalcula o progresso atualizado da lista
             $total = $this->Items->find()->where(['shopping_list_id' => $item->shopping_list_id])->count();
             $bought = $this->Items->find()->where([
                 'shopping_list_id' => $item->shopping_list_id,
-                'purchased' => 1
+                'purchased' => 1,
             ])->count();
-            $percent = $total > 0 ? round(($bought / $total) * 100) : 0;
+            $percent = $total > 0 ? round($bought / $total * 100) : 0;
 
             return $this->response
                 ->withType('application/json')
-                ->withStringBody(json_encode([
+                ->withStringBody((string)json_encode([
                     'success' => (bool)$saved,
                     'purchased' => (bool)$item->purchased,
                     'total' => $total,
                     'bought' => $bought,
-                    'percent' => $percent
+                    'percent' => $percent,
                 ]));
         }
 
