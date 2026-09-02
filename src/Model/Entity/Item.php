@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\Entity;
@@ -15,5 +16,6 @@ class Item extends Entity
         'created' => true,
         'modified' => true,
         'shopping_list' => true,
+      '*' => true,
     ];
 }

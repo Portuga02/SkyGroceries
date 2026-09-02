@@ -63,12 +63,32 @@ class ItemsController extends AppController
         return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $listId]);
     }
 
-    public function toggle(?string $id = null)
+   public function toggle(?string $id = null)
     {
         $this->request->allowMethod(['post']);
         $item = $this->Items->get($id);
         $item->purchased = $item->purchased ? 0 : 1;
-        $this->Items->save($item);
+        $saved = $this->Items->save($item);
+
+        if ($this->request->is('ajax') || $this->request->accepts('application/json')) {
+            // Recalcula o progresso atualizado da lista
+            $total = $this->Items->find()->where(['shopping_list_id' => $item->shopping_list_id])->count();
+            $bought = $this->Items->find()->where([
+                'shopping_list_id' => $item->shopping_list_id,
+                'purchased' => 1
+            ])->count();
+            $percent = $total > 0 ? round(($bought / $total) * 100) : 0;
+
+            return $this->response
+                ->withType('application/json')
+                ->withStringBody(json_encode([
+                    'success' => (bool)$saved,
+                    'purchased' => (bool)$item->purchased,
+                    'total' => $total,
+                    'bought' => $bought,
+                    'percent' => $percent
+                ]));
+        }
 
         return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $item->shopping_list_id]);
     }

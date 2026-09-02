@@ -61,18 +61,18 @@ Copie o arquivo de exemplo de configuração (caso não tenha o .env):
     bin/cake migrations migrate
    
 6.  Inicie o servidor de desenvolvimento:
-bin/cake server
-Acesse a aplicação no navegador em: http://localhost:8765
+    bin/cake server
+    Acesse a aplicação no navegador em: http://localhost:8765
 
 7. 💡 Configuração Recomendada (VS Code)
-Para visualizar os templates com o ícone oficial do CakePHP (.cake.php) na árvore de arquivos usando a extensão Material Icon Theme, adicione ao seu settings.json:
+    Para visualizar os templates com o ícone oficial do CakePHP (.cake.php) na árvore de arquivos usando a extensão Material Icon Theme, adicione ao seu settings.json:
 
 8. JSON
-"material-icon-theme.files.associations": {
-  "*.cake.php": "cake"
-},
-"files.associations": {
-  "*.cake.php": "php"
-}
+    "material-icon-theme.files.associations": {
+    "*.cake.php": "cake"
+    },
+    "files.associations": {
+    "*.cake.php": "php"
+    }
 9. 📄 Licença
-Este projeto está sob a licença MIT.
+    Este projeto está sob a licença MIT.
