@@ -27,48 +27,51 @@ $this->assign('title', h($list->name) . ' — SkyGroceries');
     <?php endif; ?>
 </div>
 
-<?php if ($list->items && count($list->items) > 0) : ?>
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th width="50"></th>
-                <th>Item</th>
-                <th width="80">Qtd</th>
-                <th width="120"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($list->items as $item) : ?>
-                <tr class="<?= $item->purchased ? 'item-purchased' : '' ?>">
-                    <td>
-                        <?= $this->Form->postLink(
-                            $item->purchased ? '✅' : '⬜',
-                            ['controller' => 'Items', 'action' => 'toggle', $item->id],
-                            [
-                                'class' => 'toggle-btn ajax-toggle',
-                                'data-item-id' => $item->id,
-                                'escape' => false
-                            ]
-                        ) ?>
-                    </td>
-                    <td class="item-name-cell <?= $item->purchased ? 'text-risked' : '' ?>">
-                        <?= h($item->name) ?>
-                    </td>
-                    <td>
-                        <span class="quantity-badge"><?= h($item->quantity) ?></span>
-                    </td>
-                    <td class="actions-cell">
-                        <?= $this->Html->link('Editar', ['controller' => 'Items', 'action' => 'edit', $item->id], ['class' => 'btn btn-small btn-secondary']) ?>
-                        <?= $this->Form->postLink(
-                            'Remover',
-                            ['controller' => 'Items', 'action' => 'delete', $item->id],
-                            ['class' => 'btn btn-small btn-danger', 'confirm' => 'Remover este item?']
-                        ) ?>
-                    </td>
+<?php if (!empty($groupedItems)) : ?>
+    <?php foreach ($groupedItems as $category => $items) : ?>
+        <h3 class="category-title"><?= h($category) ?></h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th width="50"></th>
+                    <th>Item</th>
+                    <th width="80">Qtd</th>
+                    <th width="120"></th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($items as $item) : ?>
+                    <tr class="<?= $item->purchased ? 'item-purchased' : '' ?>">
+                        <td>
+                            <?= $this->Form->postLink(
+                                $item->purchased ? '✅' : '⬜',
+                                ['controller' => 'Items', 'action' => 'toggle', $item->id],
+                                [
+                                    'class' => 'toggle-btn ajax-toggle',
+                                    'data-item-id' => $item->id,
+                                    'escape' => false
+                                ]
+                            ) ?>
+                        </td>
+                        <td class="item-name-cell <?= $item->purchased ? 'text-risked' : '' ?>">
+                            <?= h($item->name) ?>
+                        </td>
+                        <td>
+                            <span class="quantity-badge"><?= h($item->quantity) ?></span>
+                        </td>
+                        <td class="actions-cell">
+                            <?= $this->Html->link('Editar', ['controller' => 'Items', 'action' => 'edit', $item->id], ['class' => 'btn btn-small btn-secondary']) ?>
+                            <?= $this->Form->postLink(
+                                'Remover',
+                                ['controller' => 'Items', 'action' => 'delete', $item->id],
+                                ['class' => 'btn btn-small btn-danger', 'confirm' => 'Remover este item?']
+                            ) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endforeach; ?>
 <?php else : ?>
     <div class="empty-state">
         <div class="empty-icon">📝</div>
@@ -83,9 +86,25 @@ $this->assign('title', h($list->name) . ' — SkyGroceries');
         <div class="form-row">
             <?= $this->Form->control('name', [
                 'label' => false,
-                'placeholder' => 'Nome do item (ex: Arroz, Leite...)',
+                'placeholder' => 'Nome do item (ex: Arroz, Maçã...)',
                 'class' => 'form-input',
                 'required' => true
+            ]) ?>
+            <?= $this->Form->control('category', [
+                'label' => false,
+                'type' => 'select',
+                'options' => [
+                    '🥬 Hortifrúti' => '🥬 Hortifrúti',
+                    '🥩 Açougue'    => '🥩 Açougue',
+                    '🧀 Laticínios' => '🧀 Laticínios',
+                    '🥖 Padaria'    => '🥖 Padaria',
+                    '🥤 Bebidas'    => '🥤 Bebidas',
+                    '🧹 Limpeza'    => '🧹 Limpeza',
+                    '🧴 Higiene'    => '🧴 Higiene',
+                    '📦 Outros'     => '📦 Outros'
+                ],
+                'default' => '📦 Outros',
+                'class' => 'form-input'
             ]) ?>
             <?= $this->Form->control('quantity', [
                 'label' => false,
@@ -110,14 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
 
-            // O postLink do CakePHP submete um form oculto com o token CSRF
             let form = null;
             const formName = btn.getAttribute('data-confirm-form');
             if (formName) {
                 form = document.querySelector(`form[name="${formName}"]`);
             }
             if (!form) {
-                // Tenta achar o formulário oculto gerado adjacente
                 form = btn.closest('form') || btn.nextElementSibling;
                 while (form && form.tagName !== 'FORM') {
                     form = form.nextElementSibling;
@@ -144,10 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     const data = await response.json();
 
-                    // 1. Alterna o emoji do botão
                     btn.textContent = data.purchased ? '✅' : '⬜';
 
-                    // 2. Alterna o estilo da linha e o risco no texto
                     const row = btn.closest('tr');
                     if (row) {
                         row.classList.toggle('item-purchased', data.purchased);
@@ -157,13 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
-                    // 3. Atualiza o contador de texto
                     const purchasedEl = document.getElementById('purchased-count');
                     const totalEl = document.getElementById('total-count');
                     if (purchasedEl) purchasedEl.textContent = data.bought;
                     if (totalEl) totalEl.textContent = data.total;
 
-                    // 4. Atualiza a barra de progresso
                     const fill = document.querySelector('.progress-fill');
                     if (fill) {
                         fill.style.width = `${data.percent}%`;

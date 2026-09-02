@@ -15,22 +15,21 @@ class ShoppingListsController extends AppController
 
         $this->set(compact('lists'));
     }
+public function view($id = null)
+{
+    $list = $this->ShoppingLists->get($id, contain: ['Items']);
 
-    public function view($id = null)
-    {
-        $list = $this->ShoppingLists->get($id, contain: ['Items' => function ($q) {
-            return $q->orderBy(['Items.purchased' => 'ASC', 'Items.name' => 'ASC']);
-        }]);
+    $items = $list->items ?? [];
+    $totalCount = count($items);
+    $purchasedCount = collection($items)->filter(fn($item) => (bool)$item->purchased)->count();
 
-        $purchasedCount = $list->items ? count(array_filter(
-            $list->items,
-            fn ($i) => $i->purchased
-        )) : 0;
+    $groupedItems = collection($items)->groupBy(function ($item) {
+        return !empty($item->category) ? $item->category : '📦 Outros';
+    })->toArray();
 
-        $totalCount = $list->items ? count($list->items) : 0;
-
-        $this->set(compact('list', 'purchasedCount', 'totalCount'));
-    }
+    // groupedItems OBRIGATÓRIO estar aqui dentro:
+    $this->set(compact('list', 'totalCount', 'purchasedCount', 'groupedItems'));
+}
 
     public function add()
     {

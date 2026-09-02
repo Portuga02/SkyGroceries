@@ -16,7 +16,7 @@
     <header class="header">
         <div class="container">
             <h1 class="logo">
-                <?= $this->Html->link(' skyGroceries', '/') ?>
+                <?= $this->Html->link(' SkyGroceries', '/') ?>
             </h1>
             <nav class="nav">
                 <?= $this->Html->link('+ Nova Lista', ['controller' => 'ShoppingLists', 'action' => 'add'], ['class' => 'btn btn-primary']) ?>

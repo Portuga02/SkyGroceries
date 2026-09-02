@@ -88,7 +88,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* Botões Genéricos e Específicos */
+/* Botões */
 button,
 input[type="submit"],
 .btn {
@@ -266,7 +266,18 @@ input[type="submit"]:active,
     font-weight: 500;
 }
 
-/* Items Table */
+/* Categorias */
+.category-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 28px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Tabela de Itens */
 .items-table {
     width: 100%;
     background: var(--color-surface);
@@ -274,7 +285,7 @@ input[type="submit"]:active,
     border: 1px solid var(--color-border);
     border-collapse: collapse;
     overflow: hidden;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
 }
 
 .items-table th {
@@ -344,6 +355,7 @@ input[type="submit"]:active,
     background: var(--color-surface);
     border-radius: var(--radius);
     border: 2px dashed var(--color-border);
+    margin-bottom: 24px;
 }
 
 .empty-icon {
@@ -361,16 +373,20 @@ input[type="submit"]:active,
     margin-bottom: 20px;
 }
 
-/* Formulários do CakePHP */
+/* Formulários */
 .items.form.content,
 .form-container,
 .add-item-section {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    padding: 28px;
+    padding: 24px;
     box-shadow: var(--shadow);
     margin: 20px auto;
+}
+
+.form-container,
+.items.form.content {
     max-width: 550px;
 }
 
@@ -389,7 +405,6 @@ legend {
     color: var(--color-text);
 }
 
-/* Estilização dos inputs automáticos gerados pelo FormHelper */
 .items.form .input,
 .form-group {
     margin-bottom: 1.2rem;
@@ -406,10 +421,7 @@ label {
 
 .items.form input[type="text"],
 .items.form input[type="number"],
-.items.form input[type="email"],
-.items.form input[type="password"],
 .items.form select,
-.items.form textarea,
 .form-input {
     width: 100%;
     padding: 10px 14px;
@@ -425,6 +437,7 @@ label {
 
 .items.form input[type="text"]:focus,
 .items.form input[type="number"]:focus,
+.items.form select:focus,
 .form-input:focus {
     outline: none;
     border-color: var(--color-primary);
@@ -432,15 +445,39 @@ label {
     background: #ffffff;
 }
 
-.form-input-small {
-    width: 80px;
-    flex-shrink: 0;
-}
-
+/* Alinhamento horizontal do formulário de Adicionar Item */
 .form-row {
     display: flex;
     gap: 10px;
-    align-items: flex-end;
+    align-items: center;
+    width: 100%;
+}
+
+/* Garante que os wrappers de div que o CakePHP injeta fiquem alinhados */
+.form-row>.input,
+.form-row>div {
+    margin-bottom: 0;
+}
+
+.form-row>div:nth-child(1),
+.form-row>.input:first-child {
+    flex: 3;
+    /* Campo de Nome com mais espaço */
+}
+
+.form-row>div:nth-child(2) {
+    flex: 2;
+    /* Campo de Categoria */
+}
+
+.form-row>div:nth-child(3) {
+    flex: 0 0 85px;
+    /* Quantidade */
+}
+
+.form-row button {
+    flex-shrink: 0;
+    height: 42px;
 }
 
 .form-actions {
@@ -485,14 +522,15 @@ label {
     border: 1px solid #fecaca;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
+/* Responsivo para celulares */
+@media (max-width: 650px) {
     .form-row {
         flex-direction: column;
+        align-items: stretch;
     }
 
-    .form-input-small {
-        width: 100%;
+    .form-row>div:nth-child(3) {
+        flex: 1;
     }
 
     .page-header-row {
