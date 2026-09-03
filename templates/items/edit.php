@@ -4,34 +4,91 @@
  * @var \App\Model\Entity\Item $item
  * @var string[]|\Cake\Collection\CollectionInterface $shoppingLists
  */
+$this->assign('title', 'Editar Item — SkyGroceries');
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
+
+<div class="page-header">
+    <div class="page-header-row">
+        <h2>✏️ Editar Item</h2>
+        <div class="page-header-actions">
+            <!-- Botão de Excluir estilizado no topo -->
             <?= $this->Form->postLink(
-                __('Delete'),
+                'Excluir Item',
                 ['action' => 'delete', $item->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $item->id), 'class' => 'side-nav-item']
+                [
+                    'class' => 'btn btn-danger',
+                    'confirm' => 'Tem certeza que deseja remover este item?'
+                ]
             ) ?>
-            <?= $this->Html->link(__('List Items'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="items form content">
-            <?= $this->Form->create($item) ?>
-            <fieldset>
-                <legend><?= __('Edit Item') ?></legend>
-                <?php
-                    echo $this->Form->control('shopping_list_id', ['options' => $shoppingLists]);
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('category');
-                    echo $this->Form->control('price');
-                    echo $this->Form->control('is_purchased');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
         </div>
     </div>
+</div>
+
+<div class="form-container" style="background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 20px;">
+    <?= $this->Form->create($item) ?>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Lista de Compras</label>
+                <?= $this->Form->control('shopping_list_id', [
+                    'options' => $shoppingLists,
+                    'label' => false,
+                    'class' => 'form-input',
+                    'style' => 'width: 100%; padding: 10px;'
+                ]) ?>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Nome do Item</label>
+                <?= $this->Form->control('name', [
+                    'label' => false,
+                    'class' => 'form-input',
+                    'style' => 'width: 100%; padding: 10px;',
+                    'required' => true
+                ]) ?>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Categoria</label>
+                <?= $this->Form->control('category', [
+                    'label' => false,
+                    'type' => 'select',
+                    'options' => [
+                        '🥬 Hortifrúti' => '🥬 Hortifrúti',
+                        '🥩 Açougue'    => '🥩 Açougue',
+                        '🧀 Laticínios' => '🧀 Laticínios',
+                        '🥖 Padaria'    => '🥖 Padaria',
+                        '🥤 Bebidas'    => '🥤 Bebidas',
+                        '🧹 Limpeza'    => '🧹 Limpeza',
+                        '🧴 Higiene'    => '🧴 Higiene',
+                        '📦 Outros'     => '📦 Outros'
+                    ],
+                    'class' => 'form-input',
+                    'style' => 'width: 100%; padding: 10px;'
+                ]) ?>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Preço (R$)</label>
+                <?= $this->Form->control('price', [
+                    'label' => false,
+                    'type' => 'number',
+                    'step' => '0.01',
+                    'class' => 'form-input',
+                    'style' => 'width: 100%; padding: 10px;'
+                ]) ?>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                <?= $this->Form->control('is_purchased', [
+                    'label' => 'Item já comprado',
+                    'type' => 'checkbox'
+                ]) ?>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <?= $this->Form->button('Salvar Alterações', ['class' => 'btn btn-primary']) ?>
+                <?= $this->Html->link('Cancelar', ['controller' => 'ShoppingLists', 'action' => 'view', $item->shopping_list_id], ['class' => 'btn btn-secondary', 'style' => 'text-decoration: none; display: inline-flex; align-items: center; justify-content: center;']) ?>
+            </div>
+        </div>
+    <?= $this->Form->end() ?>
 </div>

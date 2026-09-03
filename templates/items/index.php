@@ -3,61 +3,50 @@
  * @var \App\View\AppView $this
  * @var iterable<\App\Model\Entity\Item> $items
  */
+$this->assign('title', 'Gerenciar Itens — SkyGroceries');
 ?>
-<div class="items index content">
-    <?= $this->Html->link(__('New Item'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Items') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
-                    <th><?= $this->Paginator->sort('shopping_list_id') ?></th>
-                    <th><?= $this->Paginator->sort('name') ?></th>
-                    <th><?= $this->Paginator->sort('category') ?></th>
-                    <th><?= $this->Paginator->sort('price') ?></th>
-                    <th><?= $this->Paginator->sort('is_purchased') ?></th>
-                    <th><?= $this->Paginator->sort('created') ?></th>
-                    <th><?= $this->Paginator->sort('modified') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($items as $item): ?>
-                <tr>
-                    <td><?= $this->Number->format($item->id) ?></td>
-                    <td><?= $item->hasValue('shopping_list') ? $this->Html->link($item->shopping_list->name, ['controller' => 'ShoppingLists', 'action' => 'view', $item->shopping_list->id]) : '' ?></td>
-                    <td><?= h($item->name) ?></td>
-                    <td><?= h($item->category) ?></td>
-                    <td><?= $item->price === null ? '' : $this->Number->format($item->price) ?></td>
-                    <td><?= h($item->is_purchased) ?></td>
-                    <td><?= h($item->created) ?></td>
-                    <td><?= h($item->modified) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $item->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $item->id]) ?>
-                        <?= $this->Form->postLink(
-                            __('Delete'),
-                            ['action' => 'delete', $item->id],
-                            [
-                                'method' => 'delete',
-                                'confirm' => __('Are you sure you want to delete # {0}?', $item->id),
-                            ]
-                        ) ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+
+<div class="page-header">
+    <div class="page-header-row">
+        <h2>📦 Todos os Itens</h2>
+        <div class="page-header-actions">
+            <?= $this->Html->link('← Voltar para as Listas', ['controller' => 'ShoppingLists', 'action' => 'index'], ['class' => 'btn btn-secondary']) ?>
+        </div>
     </div>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
-    </div>
+</div>
+
+<div class="form-container" style="background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 20px;">
+    <?php if (empty($items)) : ?>
+        <div style="text-align: center; padding: 30px; color: gray;">
+            <p>Nenhum item cadastrado no sistema.</p>
+        </div>
+    <?php else : ?>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <?php foreach ($items as $item): ?>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--bg-color, #f9f9f9); border: 1px solid var(--border-color); border-radius: 6px;">
+                    <div>
+                        <strong style="font-size: 16px; display: block;"><?= h($item->name) ?></strong>
+                        <small style="color: gray;">
+                            Categoria: <?= h($item->category) ?> 
+                            <?php if ($item->hasValue('shopping_list')): ?>
+                                | Lista: <?= h($item->shopping_list->name) ?>
+                            <?php endif; ?>
+                        </small>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <?php if ($item->price): ?>
+                            <span style="font-weight: bold; color: var(--primary-color);">R$ <?= number_format($item->price, 2, ',', '.') ?></span>
+                        <?php endif; ?>
+                        
+                        <?= $this->Html->link('Editar', ['action' => 'edit', $item->id], ['class' => 'btn btn-small btn-secondary', 'style' => 'text-decoration: none; padding: 6px 12px;']) ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>
+
+<div style="margin-top: 20px;">
+    <?= $this->Html->link('← Voltar para Listas', ['controller' => 'ShoppingLists', 'action' => 'index'], ['class' => 'btn btn-secondary']) ?>
 </div>

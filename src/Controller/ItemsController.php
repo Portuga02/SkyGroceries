@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -42,20 +43,28 @@ class ItemsController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($shoppingListId = null)
     {
         $item = $this->Items->newEmptyEntity();
         if ($this->request->is('post')) {
-            $item = $this->Items->patchEntity($item, $this->request->getData());
-            if ($this->Items->save($item)) {
-                $this->Flash->success(__('The item has been saved.'));
+            $data = $this->request->getData();
+            $data['shopping_list_id'] = $shoppingListId;
 
-                return $this->redirect(['action' => 'index']);
+            // Garante que se a quantidade vier vazia, assume 1
+            if (empty($data['quantity'])) {
+                $data['quantity'] = 1;
             }
-            $this->Flash->error(__('The item could not be saved. Please, try again.'));
+
+            $item = $this->Items->patchEntity($item, $data);
+
+            if ($this->Items->save($item)) {
+                $this->Flash->success(__('Item adicionado com sucesso!'));
+                return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $shoppingListId]);
+            }
+            $this->Flash->error(__('Não foi possível adicionar o item. Tente novamente.'));
         }
-        $shoppingLists = $this->Items->ShoppingLists->find('list', limit: 200)->all();
-        $this->set(compact('item', 'shoppingLists'));
+
+        $this->set(compact('item', 'shoppingListId'));
     }
 
     /**
@@ -71,11 +80,11 @@ class ItemsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $item = $this->Items->patchEntity($item, $this->request->getData());
             if ($this->Items->save($item)) {
-                $this->Flash->success(__('The item has been saved.'));
+                $this->Flash->success(__('Item salvo com sucesso!'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The item could not be saved. Please, try again.'));
+            $this->Flash->success(__('Item removido com sucesso!'));
         }
         $shoppingLists = $this->Items->ShoppingLists->find('list', limit: 200)->all();
         $this->set(compact('item', 'shoppingLists'));

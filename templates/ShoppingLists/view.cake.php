@@ -33,6 +33,7 @@ $this->assign('title', h($list->name) . ' — SkyGroceries');
         <table class="items-table">
             <thead>
                 <tr>
+                    <th width="40">#</th>
                     <th width="50"></th>
                     <th>Item</th>
                     <th width="80">Qtd</th>
@@ -40,35 +41,38 @@ $this->assign('title', h($list->name) . ' — SkyGroceries');
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($items as $item) : ?>
-                    <tr class="<?= $item->purchased ? 'item-purchased' : '' ?>">
-                        <td>
-                            <?= $this->Form->postLink(
-                                $item->purchased ? '✅' : '⬜',
-                                ['controller' => 'Items', 'action' => 'toggle', $item->id],
-                                [
-                                    'class' => 'toggle-btn ajax-toggle',
-                                    'data-item-id' => $item->id,
-                                    'escape' => false
-                                ]
-                            ) ?>
-                        </td>
-                        <td class="item-name-cell <?= $item->purchased ? 'text-risked' : '' ?>">
-                            <?= h($item->name) ?>
-                        </td>
-                        <td>
-                            <span class="quantity-badge"><?= h($item->quantity) ?></span>
-                        </td>
-                        <td class="actions-cell">
-                            <?= $this->Html->link('Editar', ['controller' => 'Items', 'action' => 'edit', $item->id], ['class' => 'btn btn-small btn-secondary']) ?>
-                            <?= $this->Form->postLink(
-                                'Remover',
-                                ['controller' => 'Items', 'action' => 'delete', $item->id],
-                                ['class' => 'btn btn-small btn-danger', 'confirm' => 'Remover este item?']
-                            ) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+              <?php $counter = 1; foreach ($items as $item) : ?>
+    <tr class="<?= $item->is_purchased ? 'item-purchased' : '' ?>">
+        <td>
+            <span style="color: gray; font-size: 13px; font-weight: bold;"><?= $counter++ ?></span>
+        </td>
+        <td>
+            <?= $this->Form->postLink(
+                $item->is_purchased ? '✅' : '⬜',
+                ['controller' => 'Items', 'action' => 'toggle', $item->id],
+                [
+                    'class' => 'toggle-btn ajax-toggle',
+                    'data-item-id' => $item->id,
+                    'escape' => false
+                ]
+            ) ?>
+        </td>
+        <td class="item-name-cell <?= $item->is_purchased ? 'text-risked' : '' ?>">
+            <?= h($item->name) ?>
+        </td>
+        <td>
+            <span class="quantity-badge"><?= h($item->quantity ?? 1) ?></span>
+        </td>
+        <td class="actions-cell">
+            <?= $this->Html->link('Editar', ['controller' => 'Items', 'action' => 'edit', $item->id], ['class' => 'btn btn-small btn-secondary']) ?>
+            <?= $this->Form->postLink(
+                'Remover',
+                ['controller' => 'Items', 'action' => 'delete', $item->id],
+                ['class' => 'btn btn-small btn-danger', 'confirm' => 'Remover este item?']
+            ) ?>
+        </td>
+    </tr>
+<?php endforeach; ?>
             </tbody>
         </table>
     <?php endforeach; ?>
