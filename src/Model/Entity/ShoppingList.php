@@ -9,6 +9,7 @@ class ShoppingList extends Entity
 {
     protected array $_accessible = [
         'name' => true,
+        'icon' => true,
         'items' => true,
         'created' => true,
         'modified' => true,

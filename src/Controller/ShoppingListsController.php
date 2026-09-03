@@ -70,7 +70,7 @@ class ShoppingListsController extends AppController
     {
         $shoppingList = $this->ShoppingLists->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $shoppingList = $this->ShoppingLists->patchEntity($shoppingList, $this->request->getData());
+           $shoppingList = $this->ShoppingLists->patchEntity($shoppingList, $this->request->getData());
             if ($this->ShoppingLists->save($shoppingList)) {
                 $this->Flash->success('Lista atualizada.');
 

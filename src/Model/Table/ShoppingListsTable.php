@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\Table;
@@ -26,5 +27,11 @@ class ShoppingListsTable extends Table
             'dependent' => true,
             'cascadeCallbacks' => true,
         ]);
+    }
+    public function beforeSave(\Cake\Event\EventInterface $event, \Cake\Datasource\EntityInterface $entity, \ArrayObject $options)
+    {
+        if (empty($entity->icon)) {
+            $entity->icon = '🛒'; // Padrão se vier em branco
+        }
     }
 }

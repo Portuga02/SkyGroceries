@@ -467,7 +467,27 @@ label {
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     background: #ffffff;
 }
+/* Força o input de texto a seguir o padrão visual moderno do app */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
 
+input[type="text"]:focus {
+    border-color: #5535c8; /* Cor roxa padrão dos seus botões */
+    box-shadow: 0 0 0 3px rgba(85, 53, 200, 0.1);
+}
 /* Alinhamento horizontal do formulário de Adicionar Item */
 .form-row {
     display: flex;
