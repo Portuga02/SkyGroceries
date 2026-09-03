@@ -2,20 +2,14 @@
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Item $item
+ * @var string|null $shoppingListId
  */
-$this->assign('title', 'Editar Item — SkyGroceries');
+$this->assign('title', 'Adicionar Item — SkyGroceries');
 ?>
 
 <div class="page-header">
     <div class="page-header-row">
-        <h2>✏️ Editar Item</h2>
-        <div class="page-header-actions">
-            <?= $this->Form->postLink(
-                'Excluir Item',
-                ['action' => 'delete', $item->id],
-                ['class' => 'btn btn-danger', 'confirm' => 'Tem certeza que deseja remover este item?']
-            ) ?>
-        </div>
+        <h2>➕ Adicionar Item</h2>
     </div>
 </div>
 
@@ -47,6 +41,7 @@ $this->assign('title', 'Editar Item — SkyGroceries');
                         '🧴 Higiene'    => '🧴 Higiene',
                         '📦 Outros'     => '📦 Outros'
                     ],
+                    'default' => '📦 Outros',
                     'class' => 'form-input',
                     'style' => 'width: 100%; padding: 10px;'
                 ]) ?>
@@ -57,6 +52,7 @@ $this->assign('title', 'Editar Item — SkyGroceries');
                 <?= $this->Form->control('quantity', [
                     'label' => false,
                     'type' => 'number',
+                    'value' => 1,
                     'min' => 1,
                     'max' => 99,
                     'class' => 'form-input',
@@ -75,16 +71,9 @@ $this->assign('title', 'Editar Item — SkyGroceries');
                 ]) ?>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <?= $this->Form->control('is_purchased', [
-                    'label' => 'Item já comprado',
-                    'type' => 'checkbox'
-                ]) ?>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <?= $this->Form->button('Salvar Alterações', ['class' => 'btn btn-primary']) ?>
-                <?= $this->Html->link('Cancelar', ['controller' => 'ShoppingLists', 'action' => 'view', $item->shopping_list_id], ['class' => 'btn btn-secondary', 'style' => 'text-decoration: none; display: inline-flex; align-items: center; justify-content: center;']) ?>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                <?= $this->Form->button('Adicionar Item', ['class' => 'btn btn-primary']) ?>
+                <?= $this->Html->link('Cancelar', ['controller' => 'ShoppingLists', 'action' => 'view', $shoppingListId], ['class' => 'btn btn-secondary', 'style' => 'text-decoration: none; display: inline-flex; align-items: center; justify-content: center;']) ?>
             </div>
         </div>
     <?= $this->Form->end() ?>

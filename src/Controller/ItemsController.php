@@ -82,12 +82,45 @@ class ItemsController extends AppController
             if ($this->Items->save($item)) {
                 $this->Flash->success(__('Item salvo com sucesso!'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $item->shopping_list_id]);
             }
-            $this->Flash->success(__('Item removido com sucesso!'));
+            $this->Flash->error(__('Não foi possível salvar o item. Tente novamente.'));
         }
         $shoppingLists = $this->Items->ShoppingLists->find('list', limit: 200)->all();
         $this->set(compact('item', 'shoppingLists'));
+    }
+
+    /**
+     * Toggle method - alterna o status "comprado" de um item via AJAX
+     *
+     * @param string|null $id Item id.
+     * @return \Cake\Http\Response Resposta JSON com o novo estado do item e da lista.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function toggle($id = null)
+    {
+        $this->request->allowMethod(['post']);
+        $this->viewBuilder()->setClassName('Json');
+
+        $item = $this->Items->get($id);
+        $item->is_purchased = !$item->is_purchased;
+        $this->Items->save($item);
+
+        $items = $this->Items->find()
+            ->where(['shopping_list_id' => $item->shopping_list_id])
+            ->all();
+
+        $total = $items->count();
+        $bought = $items->filter(fn ($i) => (bool)$i->is_purchased)->count();
+        $percent = $total > 0 ? (int)round(($bought / $total) * 100) : 0;
+
+        $this->set([
+            'purchased' => (bool)$item->is_purchased,
+            'total' => $total,
+            'bought' => $bought,
+            'percent' => $percent,
+            '_serialize' => ['purchased', 'total', 'bought', 'percent'],
+        ]);
     }
 
     /**

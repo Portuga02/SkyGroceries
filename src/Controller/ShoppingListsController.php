@@ -34,7 +34,7 @@ class ShoppingListsController extends AppController
 
         $items = $list->items ?? [];
         $totalCount = count($items);
-        $purchasedCount = collection($items)->filter(fn ($item) => (bool)$item->purchased)->count();
+        $purchasedCount = collection($items)->filter(fn ($item) => (bool)$item->is_purchased)->count();
 
         $groupedItems = collection($items)->groupBy(function ($item) {
             return !empty($item->category) ? $item->category : '📦 Outros';
