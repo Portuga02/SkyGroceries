@@ -1,0 +1,16 @@
+{
+  "name": "SkyGroceries",
+  "short_name": "SkyGroceries",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5535c8",
+  "description": "Seu organizador de listas de compras.",
+  "icons": [
+    {
+      "src": "/img/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
