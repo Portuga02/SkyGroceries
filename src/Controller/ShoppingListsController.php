@@ -13,16 +13,15 @@ class ShoppingListsController extends AppController
      *
      * @return \Cake\Http\Response|null|void Renders view
      */
-    public function index()
-    {
-        // Busca todas as listas sem limite de página, ordenando por data de criação (Decrescente)
-        $shoppingLists = $this->ShoppingLists->find('all', [
-            'order' => ['created' => 'DESC']
-        ])->all();
+ public function index()
+{
+    
+    $shoppingLists = $this->ShoppingLists->find()
+        ->orderBy(['created' => 'DESC'])
+        ->all();
 
-        $this->set(compact('shoppingLists'));
-    }
-
+    $this->set(compact('shoppingLists'));
+}
     /**
      * View method
      *
