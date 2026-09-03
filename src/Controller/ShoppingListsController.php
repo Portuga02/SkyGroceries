@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -14,7 +15,10 @@ class ShoppingListsController extends AppController
      */
     public function index()
     {
-        $shoppingLists = $this->paginate($this->ShoppingLists);
+        // Busca todas as listas sem limite de página, ordenando por data de criação (Decrescente)
+        $shoppingLists = $this->ShoppingLists->find('all', [
+            'order' => ['created' => 'DESC']
+        ])->all();
 
         $this->set(compact('shoppingLists'));
     }
@@ -31,7 +35,7 @@ class ShoppingListsController extends AppController
 
         $items = $list->items ?? [];
         $totalCount = count($items);
-        $purchasedCount = collection($items)->filter(fn($item) => (bool)$item->purchased)->count();
+        $purchasedCount = collection($items)->filter(fn ($item) => (bool)$item->purchased)->count();
 
         $groupedItems = collection($items)->groupBy(function ($item) {
             return !empty($item->category) ? $item->category : '📦 Outros';
@@ -70,7 +74,7 @@ class ShoppingListsController extends AppController
     {
         $shoppingList = $this->ShoppingLists->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
-           $shoppingList = $this->ShoppingLists->patchEntity($shoppingList, $this->request->getData());
+            $shoppingList = $this->ShoppingLists->patchEntity($shoppingList, $this->request->getData());
             if ($this->ShoppingLists->save($shoppingList)) {
                 $this->Flash->success('Lista atualizada.');
 
