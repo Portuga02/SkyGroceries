@@ -5,6 +5,7 @@ use Cake\Database\Connection;
 use Cake\Database\Driver\Mysql;
 use Cake\Log\Engine\FileLog;
 use Cake\Mailer\Transport\MailTransport;
+
 use function Cake\Core\env;
 
 return [
@@ -287,7 +288,7 @@ return [
          */
         'default' => [
             'className' => Connection::class,
-            'driver' => Mysql::class,
+            'driver' => \Cake\Database\Driver\Postgres::class,
             'persistent' => false,
             'timezone' => 'UTC',
 
@@ -328,12 +329,12 @@ return [
         /*
          * The test connection is used during the test suite.
          */
-        'test' => [
+       'test' => [
             'className' => Connection::class,
-            'driver' => Mysql::class,
+            'driver' => \Cake\Database\Driver\Postgres::class,
             'persistent' => false,
             'timezone' => 'UTC',
-            'encoding' => 'utf8mb4',
+            'encoding' => 'utf8',
             'flags' => [],
             'cacheMetadata' => true,
             'quoteIdentifiers' => false,
