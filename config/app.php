@@ -289,14 +289,13 @@ return [
         'default' => [
             'className' => Connection::class,
             'driver' => \Cake\Database\Driver\Postgres::class,
+            'url' => env('DATABASE_URL', null),
             'persistent' => false,
             'timezone' => 'UTC',
-
             /*
              * For MariaDB/MySQL the internal default changed from utf8 to utf8mb4, aka full utf-8 support
              */
             'encoding' => 'utf8',
-
             /*
              * If your MySQL server is configured with `skip-character-set-client-handshake`
              * then you MUST use the `flags` config to set your charset encoding.
