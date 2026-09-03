@@ -130,16 +130,32 @@ class ItemsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
+   /**
+     * Delete method
+     *
+     * @param string|null $id Item id.
+     * @return \Cake\Http\Response|null Redirects to ShoppingLists view.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
         $item = $this->Items->get($id);
+        
+        // Guarda o ID da lista antes de remover o item do banco
+        $shoppingListId = $item->shopping_list_id;
+
         if ($this->Items->delete($item)) {
-            $this->Flash->success(__('The item has been deleted.'));
+            $this->Flash->success(__('Item removido com sucesso!'));
         } else {
-            $this->Flash->error(__('The item could not be deleted. Please, try again.'));
+            $this->Flash->error(__('Não foi possível remover o item. Tente novamente.'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        // Redireciona de volta para a mesma lista de compras
+        if ($shoppingListId) {
+            return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $shoppingListId]);
+        }
+
+        return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'index']);
     }
 }

@@ -47,24 +47,40 @@ $this->assign('title', 'Editar Item — SkyGroceries');
                 ]) ?>
             </div>
 
-            <div>
-                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Categoria</label>
-                <?= $this->Form->control('category', [
-                    'label' => false,
-                    'type' => 'select',
-                    'options' => [
-                        '🥬 Hortifrúti' => '🥬 Hortifrúti',
-                        '🥩 Açougue'    => '🥩 Açougue',
-                        '🧀 Laticínios' => '🧀 Laticínios',
-                        '🥖 Padaria'    => '🥖 Padaria',
-                        '🥤 Bebidas'    => '🥤 Bebidas',
-                        '🧹 Limpeza'    => '🧹 Limpeza',
-                        '🧴 Higiene'    => '🧴 Higiene',
-                        '📦 Outros'     => '📦 Outros'
-                    ],
-                    'class' => 'form-input',
-                    'style' => 'width: 100%; padding: 10px;'
-                ]) ?>
+            <!-- Categoria e Quantidade lado a lado -->
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 2;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Categoria</label>
+                    <?= $this->Form->control('category', [
+                        'label' => false,
+                        'type' => 'select',
+                        'options' => [
+                            '🥬 Hortifrúti' => '🥬 Hortifrúti',
+                            '🥩 Açougue'    => '🥩 Açougue',
+                            '🧀 Laticínios' => '🧀 Laticínios',
+                            '🥖 Padaria'    => '🥖 Padaria',
+                            '🥤 Bebidas'    => '🥤 Bebidas',
+                            '🧹 Limpeza'    => '🧹 Limpeza',
+                            '🧴 Higiene'    => '🧴 Higiene',
+                            '📦 Outros'     => '📦 Outros'
+                        ],
+                        'class' => 'form-input',
+                        'style' => 'width: 100%; padding: 10px;'
+                    ]) ?>
+                </div>
+
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Quantidade</label>
+                    <?= $this->Form->control('quantity', [
+                        'label' => false,
+                        'type' => 'number',
+                        'min' => 1,
+                        'max' => 999,
+                        'class' => 'form-input',
+                        'style' => 'width: 100%; padding: 10px;',
+                        'required' => true
+                    ]) ?>
+                </div>
             </div>
 
             <div>

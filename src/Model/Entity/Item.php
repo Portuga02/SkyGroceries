@@ -31,9 +31,12 @@ class Item extends Entity
      * @var array<string, bool>
      */
     protected array $_accessible = [
+        '*' => true,
+    'id' => false,
         'shopping_list_id' => true,
         'name' => true,
         'category' => true,
+        'quantity' => true,
         'price' => true,
         'is_purchased' => true,
         'created' => true,
