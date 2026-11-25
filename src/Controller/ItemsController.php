@@ -28,7 +28,7 @@ class ItemsController extends AppController
     /**
      * View method
      *
-     * @param string|null $id Item id.
+     * @param string|null $id
      * @return \Cake\Http\Response|null|void Renders view
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
@@ -70,7 +70,7 @@ class ItemsController extends AppController
     /**
      * Edit method
      *
-     * @param string|null $id Item id.
+     * @param string|null $id
      * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
@@ -91,10 +91,10 @@ class ItemsController extends AppController
     }
 
     /**
-     * Toggle method - alterna o status "comprado" de um item via AJAX
      *
-     * @param string|null $id Item id.
-     * @return \Cake\Http\Response Resposta JSON com o novo estado do item e da lista.
+     *
+     * @param string|null $id
+     * @return \Cake\Http\Response
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function toggle($id = null)
@@ -119,30 +119,30 @@ class ItemsController extends AppController
             'total' => $total,
             'bought' => $bought,
             'percent' => $percent,
-            '_serialize' => ['purchased', 'total', 'bought', 'percent'],
         ]);
+        $this->viewBuilder()->setOption('serialize', ['purchased', 'total', 'bought', 'percent']);
     }
 
     /**
      * Delete method
      *
-     * @param string|null $id Item id.
+     * @param string|null $id
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-   /**
-     * Delete method
-     *
-     * @param string|null $id Item id.
-     * @return \Cake\Http\Response|null Redirects to ShoppingLists view.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    /**
+      * Delete method
+      *
+      * @param string|null $id
+      * @return \Cake\Http\Response|null Redirects to ShoppingLists view.
+      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+      */
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
         $item = $this->Items->get($id);
-        
-        // Guarda o ID da lista antes de remover o item do banco
+
+
         $shoppingListId = $item->shopping_list_id;
 
         if ($this->Items->delete($item)) {
@@ -151,7 +151,6 @@ class ItemsController extends AppController
             $this->Flash->error(__('Não foi possível remover o item. Tente novamente.'));
         }
 
-        // Redireciona de volta para a mesma lista de compras
         if ($shoppingListId) {
             return $this->redirect(['controller' => 'ShoppingLists', 'action' => 'view', $shoppingListId]);
         }

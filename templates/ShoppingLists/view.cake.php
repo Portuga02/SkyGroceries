@@ -41,22 +41,18 @@ $this->assign('title', h($list->name) . ' — SkyGroceries');
                 </tr>
             </thead>
             <tbody>
-                <?php $counter = 1; foreach ($items as $item) : ?>
+                <?php $counter = 1;
+        foreach ($items as $item) : ?>
                     <tr class="<?= $item->is_purchased ? 'item-purchased' : '' ?>">
                         <td>
                             <span style="color: gray; font-size: 13px; font-weight: bold;"><?= $counter++ ?></span>
                         </td>
                         <td>
-                            <?= $this->Form->postLink(
-                                $item->is_purchased ? '✅' : '⬜',
-                                ['controller' => 'Items', 'action' => 'toggle', $item->id],
-                                [
-                                    'class' => 'toggle-btn ajax-toggle',
-                                    'data-item-id' => $item->id,
-                                    'escape' => false,
-                                    'style' => 'text-decoration: none; font-size: 18px;'
-                                ]
-                            ) ?>
+                            <button type="button"
+        class="ajax-toggle"
+        data-url="<?= $this->Url->build(['controller' => 'Items', 'action' => 'toggle', $item->id]) ?>">
+    <?= $item->is_purchased ? '✅' : '⬜' ?>
+</button>
                         </td>
                         <td class="item-name-cell <?= $item->is_purchased ? 'text-risked' : '' ?>">
                             <strong><?= h($item->name) ?></strong>
@@ -162,25 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.ajax-toggle').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
+            e.stopImmediatePropagation();
 
-            let form = null;
-            const formName = btn.getAttribute('data-confirm-form');
-            if (formName) {
-                form = document.querySelector(`form[name="${formName}"]`);
-            }
-            if (!form) {
-                form = btn.closest('form') || btn.nextElementSibling;
-                while (form && form.tagName !== 'FORM') {
-                    form = form.nextElementSibling;
-                }
-            }
-
-            const url = form ? form.action : btn.getAttribute('href');
-            let token = '';
-            if (form) {
-                const tokenInput = form.querySelector('input[name="_csrfToken"]');
-                if (tokenInput) token = tokenInput.value;
-            }
+            const url = btn.dataset.url || btn.getAttribute('href');
+            const token = btn.dataset.csrf 
+                || document.querySelector('meta[name="csrfToken"]')?.getAttribute('content')
+                || document.querySelector('input[name="_csrfToken"]')?.value 
+                || '';
 
             try {
                 const response = await fetch(url, {
@@ -216,6 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         fill.style.width = `${data.percent}%`;
                         fill.textContent = data.percent > 0 ? `${data.percent}%` : '';
                     }
+                } else {
+                    console.error('Erro HTTP:', response.status);
                 }
             } catch (err) {
                 console.error('Erro ao alternar o item:', err);
